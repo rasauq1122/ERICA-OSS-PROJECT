@@ -1,6 +1,6 @@
 public class Minion {
-	private int atk, hlt;
-	private boolean isdead;
+	private int atk, hlt, maxhlt, atkchance;
+	private boolean isdead, enemy = false;
 	
 	public Minion(int a, int h)
 	{
@@ -8,18 +8,21 @@ public class Minion {
 		if (h < 1) h = 1;
 		atk = a;
 		hlt = h;
+		maxhlt = h;
+		atkchance = 1;
 		isdead = false;
 	}
 	
-	public static boolean attack (Minion a, Minion b)
+	public static boolean attack(Minion a, Minion b)
 	{
-		if (a.getDead()||b.getDead()) return false;
+		if (a.getEnemy()||a.getAtkchance()==0||a.getIsdead()||b.getIsdead()) return false;
 		a.hurt(b.getAttack());
 		b.hurt(a.getAttack());
+		a.downAtkchance();
 		return true;
 	}
 	
-	public boolean hurt (int dmg)
+	public boolean hurt(int dmg)
 	{
 		if (dmg < 0) return false;
 		
@@ -33,7 +36,16 @@ public class Minion {
 		return true;
 	}
 	
-	public boolean getDead()
+	public boolean heal(int n)
+	{
+		if (n < 0) return false;
+		
+		hlt += n;
+		if (maxhlt < hlt) hlt = maxhlt;
+		return true;
+	}
+	
+	public boolean getIsdead()
 	{
 		return isdead;
 	}
@@ -41,5 +53,31 @@ public class Minion {
 	public int getAttack()
 	{
 		return atk;
+	}
+	
+	public int getAtkchance()
+	{
+		return atkchance;
+	}
+	
+	public void downAtkchance()
+	{
+		atkchance--;
+	}
+	
+	public void isenemy()
+	{
+		enemy = true;
+	}
+	
+	public boolean getEnemy()
+	{
+		return enemy;
+	}
+	
+	public String toString()
+	{
+		if (!isdead) return atk+"/"+hlt;
+		else return "---";
 	}
 }
